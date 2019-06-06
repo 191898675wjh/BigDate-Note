@@ -1,0 +1,52 @@
+1.如何搭建redis
+	1.下载redis-5.0.3.tar.gz，放入linux的安装目录下
+	2.通过命令 tar -zxvf redis-5.0.3.tar.gz解压安装文件
+	3.cd 进入文件目录下
+	4.cd  进入src路径下，执行make install
+	5.退出src路径，make，如果提示没有该命令的则从网上下载安装
+sudo apt install make，sudo apt update
+	6.sudo apt-get install gcc安装c语言的运行环境
+	7.gcc -v查看C语言运行版本，检验是否安装成功
+	8.redis-server redis.conf 如果出现图形以及Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6379
+ |    `-._   `._    /     _.-'    |     PID: 9096等则表示安装成功
+	9.新开一个终端redis-cli -p 6379，出现ip后127.0.0.1:6379> ping
+出现pong说明服务端和客户端都有响应
+2.写入字符串（redis默认存储方式为key，value键值对的方式）
+	1.在客户端ping后set name ‘（英文不支持中文）’
+	2.get name 得到valuedatebases
+	3.shutdown关闭连接
+3.redis.conf配置文件解释
+	1.loglevel notice日志打印级别，默认通知
+	2.logfile ""设置日志存放路径
+	3.datebases 16默认16个数据库0-15	，select 8 切换为第9个数据库，数据库之间的数据不通用
+	4.daemonize yes 守护进程开启或关闭.默认no
+4.hash存取
+	1.存值：hset key 对象 emp：hset stu 'didi' age 15返回值为属性的个数
+	存入多个对象hmset key 对象 属性名：属性值 属性名：属性值
+	  取值：hget key 对象属性名 emp：hget stu name，把对象里的值全部取出hgetall stu
+	取出多个对象HMGET key field1 [field2]
+	2.hlen 对象名查看对象的属性个数
+
+5.listl列表
+	1.创建集合 lpush mylist 23 56 23同时存入三个数据，返回值为存入值的个数，添加数据在表头
+	2.遍历集合设置开始和结束的下标位置lrange mylist 0 1，顺序为反向遍历，遍历全部为lrange mylist 0 -1，遍历出来的数据是从尾部开始的
+	3.lpushx mylist 77当key存在时才可以存值
+	4.lrem mylist 1 89移除数据，count为将多少个记录删除
+	5.lpop mylist移除左边第一个元素 rpop移除右边第一个元素
+6.set.不可以重复.无序
+	1.添加数据zadd k1 v1
+7.zset有序集合，唯一成员，但是double数字可以重复
+	1.添加数据zadd score 90 didi
+	2.zrange score 0 -1，只遍历属性值
+	3.zrange score 0 -1 withscores遍历属性名和属性值
+8.redis数据持久化实现
+	1.RDB在redis.conf的文件中默认使用RDB的方式保证数据的一致性save 900 1（十五分钟内有一次操作）
+save 300 10（五分钟内有三次操作）
+save 60 10000（一分钟内有10000次操作）
+只要符合上述操作次数和时间条件，系统就会默认将内存中的数据复制一份到磁盘中，文件名为dump.rdb，当服务断开时，内存中的文件丢失，系统再次连接时只需要读取磁盘中的dump.rdp文件就可以读取之前操作的数据
+	2.AOF在redis.conf的文件中设置appendonly yes，则修改数据是默认每次都记录操作，当需要恢复数据时.只需要按照操作日志再进行一次对数据的操作即可，文件保存在安装目录下appendfilename "appendonly.aof"
+
+	RDB和AOF的优缺点
+	1.RDB的速度比较快，缺点是在时间节点上容易造成数据丢失
+	2.AOF持久化性能稳定，数据基本上不会丢失，但是速度比较慢

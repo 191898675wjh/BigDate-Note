@@ -1,0 +1,99 @@
+1.如何启动HDFS
+  1.cd ./sbin目录（所有hadoop的脚本文件，启动或者关闭），bin目录（linux的指令，例如删除某个文件）
+  2.start-all.sh 在root下使用报error，如果未找到命令，使用source /etc/profile
+  3.hadoop-daemon.sh（守护进程），启动前格式化
+2.配置hadoop环境
+   1.hadoop-env.sh在hadoop/etc/hadoop/shellpeofile中36行修改为JAVA_HOME=/home/wjh/下载/jdk1.8.0_162
+   2.同目录下core-site.xml
+   <property>
+    <name>fs.default.name</name>
+    <value>hdfs://hadoop:9000</value>
+    <description>默认的HDFS端口，用于NameNode与DateNode之间的通讯，ip为NameNode（hostname）的地址</description>
+  </property>
+
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/home/wjh/下载/hadoop-3.1.2/tmp</value>
+    <description>存放hadoop文件系统依赖的基本配置</description>
+  </property>
+  3.同目录下hdfs-site.xml
+  <property>
+      <name>dfs.replication</name>
+      <value>1</value>
+   </property>
+   <property>
+      <name>dfs.permissions</name>
+      <value>false</value>
+   </property>
+4.同目录下mapred-site.xml
+<property>
+		<name>mapred.job.tracker</name>
+		<value>hadoop:9001</value>
+		<description>hostname</description>
+	</property>
+
+5.在bin下.格式化hdfs namenode -format，格式化成功的话如果不成功source /etc/profile 在root模式下应用配置hdfs namenode -format 成功则输入hadoop version 查看hadoop的版本查看hadoop是否配置成功
+
+6.在hadoop3.1.2/sbin目录下，启动start.all.sh，如果不成功报错Attempting to operate on hdfs namenode as root
+   写在最前注意： 
+1、master，slave都需要修改start-dfs.sh，stop-dfs.sh，start-yarn.sh，stop-yarn.sh四个文件 
+2、如果你的Hadoop是另外启用其它用户来启动，记得将root改为对应用户
+
+HDFS格式化后启动dfs出现以
+在/hadoop/sbin路径下： 
+
+将start-dfs.sh，stop-dfs.sh两个文件顶部添加以下参数
+
+#!/usr/bin/env bash
+HDFS_DATANODE_USER=root
+HADOOP_SECURE_DN_USER=hdfs
+
+HDFS_NAMENODE_USER=root
+
+HDFS_SECONDARYNAMENODE_USER=root
+1
+2
+3
+4
+5
+6
+
+还有，
+start-yarn.sh，stop-yarn.sh顶部也需添加以下：
+
+
+#!/usr/bin/env bash
+
+YARN_RESOURCEMANAGER_USER=root
+
+HADOOP_SECURE_DN_USER=yarn
+
+YARN_NODEMANAGER_USER=root
+
+
+
+# Licensed to the Apache Software Foundation (ASF) under one or more
+1
+2
+3
+4
+5
+6
+7
+8
+修改后重启 ./start-dfs.sh，成功！
+7.jps查看当前进程
+应该有六个加上jps本来进程
+如果缺少namenode.则把进程关闭，hadoop namenode -format，再开启进程，jps查看进程即可
+2928 ResourceManager
+4532 NameNode
+4712 DataNode
+4954 SecondaryNameNode
+5418 Jps
+3103 NodeManager
+即成功启动
+8.在浏览器中访问http://hadoop:9870/（hostname）有页面显示则hdfs已经正常启动.50020对于2以下的版泵.9870对3以上的版本
+http://hadoop:8088也可以验证是否正常启动
+
+
+

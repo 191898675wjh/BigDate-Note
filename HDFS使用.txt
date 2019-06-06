@@ -1,0 +1,77 @@
+1.如何在HDFS上上传文件，并查看
+  	1.hdfs dfs -put 文件目录 /input/a.txt 这个文件夹必须已经存在，把a.txt上传到HDFS上.
+	hdfs dfs -put 文件目录 /上传到HDFS根目录下，如果文件夹没有存在，会把这个文件夹当成一个文件上传
+
+2.在linux的浏览器上输入hadoop:9870,这个网址可以查看HDFS的已上传文件
+  Utilities-Browse the file system下查看具体信息
+
+3.如何在windows配置hadoop环境
+	1.下载hadoop
+	2.c:\windows\system32;%system%;F:\orcle\orcledata\bin;%JAVA HOME%\bin;C:\Program Files\MySQL\MySQL Utilities 1.6\:MAVEN_HOME\bin;%Hadoop_Home%\bin;%Hadoop_Home%\sbin
+	3.在系统高级设置里新建环境变量Hadoop_home，变量值为hadoop的安装路径，在path加入;%Hadoop_Home%\bin;%Hadoop_Home%\sbin
+	4.修改C:\hadoop-2.7.7\conf里面的hadoop-env和etc下的hadoop-env，修改路径set JAVA_HOME=C:\jdk1.8.0_192，最好路径里面不要包含空格否则会报错
+	5.在c盘下可以直接hadoop查看version版本，非c盘需要到bin目录下执行hadoop version
+4.修改block块的默认大小
+  
+5.在windows下使用hadoop和linux互相连接
+        1.需要两个安装包，hadoop3.1.2和hadoop-eclipse-plugin-2.7.1，
+	2.第一个刚刚已经配置完成.第二个安装包相当于在eclipse下加入hadoop
+	3.C:\Windows\System32\drivers\etc\hosts下加入linux的用户名和ip，实现对linux的映射
+192.168.21.130   hadoop
+        4.把hadoop-eclipse-plugin-2.7.1 jar包放入eclipse安装目录中E:\java ee study\eclipse\dropins的文件夹下
+        5.打开eclipse-windows-preference-Hadoop_Map/Reduce-browse-hadoop安装目录
+        6.打开windows-show view-others-map/reduce location-open
+        7.控制台Test-新建new Hadoop location
+        8.DFS MASTER内容取消勾选-host（linux的core-site`xml设置的主机名和默认端口）hadoop，port：9000，Map Reduce Master内容host hadoop和port 9001.再次勾选-完成
+        9.新建maven项目在pom.xml文件里配置jar包依赖如下
+<dependencies>
+  
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>3.1.2</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-client</artifactId>
+      <version>3.1.2</version>
+     </dependency>
+     
+     <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
+      <version>3.1.2</version>
+     </dependency>
+     
+     <dependency>
+    <groupId>org.apache.hadoop</groupId>
+    <artifactId>hadoop-core</artifactId>
+    <version>1.2.1</version>
+     </dependency>
+     
+     <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-mapreduce-client-core</artifactId>
+      <version>3.1.2</version>
+     </dependency>
+     
+     <dependency>
+      <groupId>jdk.tools</groupId>
+      <artifactId>jdk.tools</artifactId>
+      <version>1.8</version>
+      <scope>system</scope>
+      <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+     </dependency>
+  </dependencies>
+  <build>
+  <finalName>Hadoop_project</finalName>
+  </build>
+
